@@ -1,0 +1,26 @@
+services:
+  swgoh-comlink:
+    container_name: swgoh-comlink
+    image: ghcr.io/swgoh-utils/swgoh-comlink:latest
+    restart: always
+    environment:
+      APP_NAME: swgoh-comlink-hunter
+      PORT: 3000
+    ports:
+      - "3000:3000"
+
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+volumes:
+  pg_data:
