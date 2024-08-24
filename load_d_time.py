@@ -33,4 +33,4 @@ def save_to_postgres(df, table_name):
 start_date = '2024-01-01'
 end_date = '2030-12-31'
 dim_time_df = create_dim_time_df(start_date, end_date)
-save_to_postgres(dim_time_df, 'dim_time')
+save_to_postgres(dim_time_df, 'd_time')
