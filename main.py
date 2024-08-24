@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from datetime import datetime, timezone
 import logging
 import os
+import argparse
 
 logging.basicConfig(filename='main.log', level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -65,23 +66,29 @@ def get_tickets(guild_id: str):
         logging.error(f"Error in get_tickets: {e}")
         raise
 
-try:
-    guild_id = "iO-khl_0TVu64OussT1Y7g" if datetime.now().hour > 22 else "1HE3bh3LRcWVOto5KuGvzQ"
+def main(guild_id: str):
+    try:
+        df_tickets = get_tickets(guild_id=guild_id)
+        df_player = get_player_meta(players=df_tickets["player_id"].to_list())
+        df_guild = get_guild_meta(guild_id=guild_id)
 
-    df_tickets = get_tickets(guild_id=guild_id)
-    df_player = get_player_meta(players=df_tickets["player_id"].to_list())
-    df_guild = get_guild_meta(guild_id=guild_id)
+        engine = create_engine(os.getenv('DATABASE_URL'))
 
-    engine = create_engine(os.getenv('DATABASE_URL'))
+        with engine.begin() as connection:
+            df_guild.to_sql("stg_guild", con=connection, if_exists="replace", index=False)
+            df_player.to_sql("stg_player", con=connection, if_exists="replace", index=False)
+            df_tickets.to_sql("stg_tickets", con=connection, if_exists="replace", index=False)
 
-    with engine.begin() as connection:
-        df_guild.to_sql("stg_guild", con=connection, if_exists="replace", index=False)
-        df_player.to_sql("stg_player", con=connection, if_exists="replace", index=False)
-        df_tickets.to_sql("stg_tickets", con=connection, if_exists="replace", index=False)
+            connection.execute(text("CALL insert_guilds()"))
+            connection.execute(text("CALL upsert_players()"))
+            connection.execute(text("CALL insert_tickets()"))
 
-        connection.execute(text("CALL insert_guilds()"))
-        connection.execute(text("CALL upsert_players()"))
-        connection.execute(text("CALL insert_tickets()"))
+    except Exception as e:
+        logging.error(f"Error in main execution: {e}")
+        raise
 
-except Exception as e:
-    logging.error(f"Error in main execution: {e}")
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="SWGOH Guild Data Collection")
+    parser.add_argument('guild_id', type=str)
+    args = parser.parse_args()
+    main(args.guild_id)
