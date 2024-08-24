@@ -1,8 +1,7 @@
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from swgoh_comlink import SwgohComlink
 from dotenv import load_dotenv
-from time import time
 from datetime import datetime, timezone
 import os
 
@@ -54,16 +53,19 @@ def get_tickets(guild_id:str):
     
     return pd.DataFrame(guild_tickets)
 
-def save_to_postgres(df, table_name, method):
-    database_url = os.getenv('DATABASE_URL')
-    engine = create_engine(database_url)
-    df.to_sql(table_name, engine, if_exists=method, index=False)
-
 guild_id = "iO-khl_0TVu64OussT1Y7g" if datetime.now().hour > 22 else "1HE3bh3LRcWVOto5KuGvzQ"
 
 df_tickets = get_tickets(guild_id=guild_id)
 df_player = get_player_meta(players=df_tickets["player_id"].to_list())
-# df_guild = get_guild_meta(guild_id=guild_id)
-# save_to_postgres(df_guild, f"stg_guild", "replace")
-save_to_postgres(df_player, "stg_player", "replace")
-save_to_postgres(df_tickets, "stg_tickets", "replace")
+df_guild = get_guild_meta(guild_id=guild_id)
+
+engine = create_engine(os.getenv('DATABASE_URL'))
+
+with engine.begin() as connection:
+    df_guild.to_sql("stg_guild", con=connection, if_exists="replace", index=False)
+    df_player.to_sql("stg_player", con=connection, if_exists="replace", index=False)
+    df_tickets.to_sql("stg_tickets", con=connection, if_exists="replace", index=False)
+
+    connection.execute(text("CALL insert_guilds()"))
+    connection.execute(text("CALL upsert_players()"))
+    connection.execute(text("CALL insert_tickets()"))
