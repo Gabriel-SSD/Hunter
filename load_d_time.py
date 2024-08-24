@@ -28,7 +28,7 @@ def save_to_postgres(df, table_name):
     load_dotenv()
     database_url = os.getenv('DATABASE_URL')
     engine = create_engine(database_url)
-    df.to_sql(table_name, engine, if_exists='replace', index=False)
+    df.to_sql(table_name, engine, if_exists='append', index=False)
 
 start_date = '2024-01-01'
 end_date = '2030-12-31'
