@@ -15,8 +15,8 @@ load_dotenv()
 bot = commands.Bot(command_prefix=".", intents=discord.Intents.all())
 CHANNEL_ID = int(os.environ.get("CHANNEL_ID"))
 FILE = "./data/tickets.png"
-RAID_PATH = ["./data/rancor.png", "./data/rancor2.png", "./data/triumvirate.png", "./data/endor.png", "./data/aat.png", "./data/krayt.png", ".data/naboo.png"]
-
+# RAID_PATH = ["./data/rancor.png", "./data/rancor2.png", "./data/triumvirate.png", "./data/endor.png", "./data/aat.png", "./data/krayt.png", "./data/naboo.png"]
+RAID_PATH = ["./data/naboo.png"]
 
 def plot_ticket_report(guild_id: str):
     DATABASE_URL = os.getenv('DATABASE_URL')
