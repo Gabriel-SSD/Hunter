@@ -31,7 +31,7 @@ def plot_ticket_report(guild_id: str):
         join d_time dt on ft.sk_time = dt.id
         join d_guild dg on ft.sk_guild = dg.id
         where 1=1
-            and dt."date" >= current_date - 7
+            and dt."date" > current_date - 7
             and dg.guild_id = '{guild_id}' 
         group by dt."date", dg."name" 
     """
@@ -43,7 +43,11 @@ def plot_ticket_report(guild_id: str):
     # Close the database connection
     conn.close()
 
-    # df['datetime'] = pd.to_datetime(df['datetime']).dt.date
+    # Verifique se a coluna 'date' está no formato correto de data
+    df['date'] = pd.to_datetime(df['date'])
+
+    # Ordene os dados por data
+    df = df.sort_values(by='date')
 
     # Set up the plot settings
     plt.rcParams['figure.facecolor'] = '#333333'
@@ -61,7 +65,7 @@ def plot_ticket_report(guild_id: str):
         # Add the image as background to the figure
         fig.figimage(img, 0, 0, zorder=0, alpha=0.2)
 
-    # Plot the ticket data
+    # Plot the ticket data (garanta que os dados estão ordenados)
     ax.plot(df['date'], df['tickets'], marker='o', color='darkorange', linestyle='-', linewidth=2, markersize=8, zorder=1)
 
     # Customize the plot appearance
