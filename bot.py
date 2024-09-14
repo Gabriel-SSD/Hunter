@@ -36,28 +36,19 @@ def plot_ticket_report(guild_id: str):
         group by dt."date", dg."name" 
     """
     
-    # Execute the query and read the results into a DataFrame
     with engine.connect() as conn:
         df = pd.read_sql_query(query, conn)
 
-    # Close the database connection
     conn.close()
-
-    # Verifique se a coluna 'date' está no formato correto de data
     df['date'] = pd.to_datetime(df['date'])
+    df = df.sort_values(by='date', ascending=True).reset_index(drop=True)
 
-    # Ordene os dados por data
-    df = df.sort_values(by='date')
-
-    # Set up the plot settings
     plt.rcParams['figure.facecolor'] = '#333333'
     plt.rcParams['text.color'] = 'white'
     plt.rcParams['font.size'] = 18
 
-    # Create a new figure and axis
     fig, ax = plt.subplots(figsize=(10, 8))
 
-    # Check if the image file exists
     img_path = choice(RAID_PATH) 
     if os.path.exists(img_path):
         # Open and resize the image
@@ -86,8 +77,8 @@ def plot_ticket_report(guild_id: str):
     # Set dynamic y-axis limits based on the data
     y_min = df['tickets'].min() - df['tickets'].min() * 0.1
     y_max = df['tickets'].max() + df['tickets'].max() * 0.1
-    ax.set_aspect('auto', adjustable='datalim')  # Adjust the aspect ratio of the plot
-    ax.set_ylim(y_min, y_max)
+    ax.set_aspect('auto')  # Adjust the aspect ratio of the plot
+    ax.set_ylim([y_min, y_max])
     ax.get_yaxis().set_visible(False)
 
     # Configure grid lines for the x-axis
