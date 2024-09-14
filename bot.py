@@ -89,13 +89,58 @@ def plot_ticket_report(guild_id: str):
     plt.tight_layout()
     plt.savefig(FILE)
 
+def get_tickets_missed(guild_id: str):
+    DATABASE_URL = os.getenv('DATABASE_URL')
+    engine = create_engine(DATABASE_URL)
+    query = f"""
+            select
+                dp.name as player,
+                sum(600 - tickets) as tickets_missed
+            from f_tickets ft
+            join d_time dt on dt.id = ft.sk_time
+            join d_player dp on dp.id = ft.sk_player
+            join d_guild dg on dg.id = ft.sk_guild
+            where 1=1
+                and ft.tickets < 600
+                and dg.guild_id = '{guild_id}'
+                and dt.date >= CURRENT_DATE - interval '7 days'
+            group by dp.name
+            """
+    with engine.connect() as conn:
+        df = pd.read_sql_query(query, conn)
+    return df
+
+def format_embed(df, guild_name):
+    if df.empty:
+        embed = discord.Embed(
+                title=f"{guild_name} Missed Tickets Report",
+                description="Perfect week!",
+                colour=discord.Color(0x7F8C8D)
+            )
+    else:
+        sum_missed = 0
+        member_list = "```\n"
+        for index, row in df.iterrows():
+            member_list += f"{row['tickets_missed']:>4d} : {row['player']}\n"
+            sum_missed += row['tickets_missed']
+        member_list += "```"
+        body = member_list
+        header = (f"**{sum_missed}** tickets missed in the last **7** days\n"
+                      f"Members that missed tickets:")
+        embed = discord.Embed(
+                title=f"{guild_name} Missed Tickets Report",
+                description=header + body,
+                colour=discord.Color(0x7F8C8D)
+            )
+    return embed
 
 @bot.event
 async def on_ready():
 
     af_tickets.start()
     ah_tickets.start()
-    tickets_missed.start()
+    ah_tickets_missed.start()
+    af_tickets_missed.start()
 
     # synced = await bot.tree.sync()
     await bot.change_presence(activity=discord.Game(name="Star Wars: Galaxy of Heroes"))
@@ -109,13 +154,6 @@ async def af_tickets():
         if channel:
             await channel.send(file=discord.File(fp=FILE))
 
-@tasks.loop(minutes=1)
-async def tickets_missed():
-    now = datetime.now()
-    if now.weekday() == 5 and now.hour == 22 and now.minute == 31:
-        channel = bot.get_channel(CHANNEL_ID)
-        if channel:
-            await channel.send("Hello there")
 
 @tasks.loop(minutes=1)
 async def ah_tickets():
@@ -126,9 +164,31 @@ async def ah_tickets():
         if channel:
             await channel.send(file=discord.File(fp=FILE))
 
+
+@tasks.loop(minutes=1)
+async def ah_tickets_missed():
+    now = datetime.now()
+    if now.weekday() == 6 and now.hour == 22 and now.minute == 32:
+        channel = bot.get_channel(CHANNEL_ID)
+        df = get_tickets_missed("iO-khl_0TVu64OussT1Y7g")
+        embed = format_embed(df, "Awakening Hope")
+        if channel:
+            await channel.send(embed=embed)
+
+@tasks.loop(minutes=1)
+async def af_tickets_missed():
+    now = datetime.now()
+    if now.weekday() == 6 and now.hour == 17 and now.minute == 32:
+        channel = bot.get_channel(CHANNEL_ID)
+        df = get_tickets_missed("1HE3bh3LRcWVOto5KuGvzQ")
+        embed = format_embed(df, "Awakening Fear")
+        if channel:
+            await channel.send(embed=embed)
+
 @af_tickets.before_loop
 @ah_tickets.before_loop
-@tickets_missed.before_loop
+@ah_tickets_missed.before_loop
+@af_tickets_missed.before_loop
 async def before_tasks():
     await bot.wait_until_ready()
 
