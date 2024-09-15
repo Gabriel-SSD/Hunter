@@ -99,6 +99,7 @@ def get_tickets_missed(guild_id: str):
                 and dg.guild_id = '{guild_id}'
                 and dt.date >= CURRENT_DATE - interval 7 days'
             group by dp.name
+            order by 2 desc
             """
     with engine.connect() as conn:
         df = pd.read_sql_query(query, conn)
