@@ -8,6 +8,8 @@ services:
       PORT: 3000
     ports:
       - "3000:3000"
+    networks:
+      - prison_network
 
   postgres:
     container_name: postgres
@@ -21,6 +23,12 @@ services:
       - "5432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
+    networks:
+      - prison_network
 
 volumes:
   pg_data:
+
+networks:
+  prison_network:
+    external: true

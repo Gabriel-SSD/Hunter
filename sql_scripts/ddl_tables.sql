@@ -45,3 +45,17 @@ CREATE TABLE public.f_tickets (
 	CONSTRAINT f_tickets_sk_player_fkey FOREIGN KEY (sk_player) REFERENCES public.d_player(id),
 	CONSTRAINT f_tickets_sk_time_fkey FOREIGN KEY (sk_time) REFERENCES public.d_time(id)
 );
+
+create table if not exists public.f_raid_result
+(
+    sk_guild  integer not null
+        references public.d_guild,
+    sk_player integer not null
+        references public.d_player,
+    sk_time   integer not null
+        references public.d_time,
+    raid_id   text,
+    points    integer,
+    primary key (sk_guild, sk_player, sk_time)
+);
+
