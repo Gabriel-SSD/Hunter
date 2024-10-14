@@ -65,14 +65,13 @@ create procedure insert_raid_result()
 as
 $$
 BEGIN
-
     INSERT INTO f_raid_result (sk_guild, sk_player, sk_time, raid_id, points)
     SELECT
         COALESCE(dg.id, -1)      AS sk_guild,
         COALESCE(dp.id, -1)      AS sk_player,
-        COALESCE(dt.id, -1) 	 AS sk_time,
+        COALESCE(dt.id, -1)      AS sk_time,
         stg.raid_id              AS raid_id,
-        cast(stg.points as int)  AS points
+        CAST(stg.points AS int)  AS points
     FROM
         stg_raid_result stg
     LEFT JOIN
@@ -80,8 +79,7 @@ BEGIN
     LEFT JOIN
         d_player dp ON stg.player_id = dp.player_id AND dp.current_flag = TRUE
     LEFT JOIN
-        d_time dt ON cast(stg.date as int) = dt.id;
+        d_time dt ON CAST(stg.date AS int) = dt.id
+    ON CONFLICT (sk_guild, sk_player, sk_time) DO NOTHING;
 END $$;
-
-alter procedure insert_raid_result() owner to hunter;
 
