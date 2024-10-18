@@ -59,7 +59,7 @@ services:
 
 volumes:
   pg_data:
-  postgres_data:
+  metabase_pg_data:
 
 networks:
   prison_network:
