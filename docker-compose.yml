@@ -50,7 +50,7 @@ services:
     environment:
       MB_DB_TYPE: postgres
       MB_DB_DBNAME: ${METABASE_DB}
-      MB_DB_PORT: 5433
+      MB_DB_PORT: 5432
       MB_DB_USER: ${METABASE_USER}
       MB_DB_PASS: ${METABASE_PASSWORD}
       MB_DB_HOST: metabase-postgres
