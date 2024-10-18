@@ -1,9 +1,10 @@
 import os
 import discord
+from dotenv import load_dotenv
 from discord.ext import tasks
 from datetime import datetime
 from bot_utils import plot_ticket_report, get_tickets_missed, format_embed
-
+load_dotenv()
 CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
 FILE = "./data/tickets.png"
 

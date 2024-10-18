@@ -5,9 +5,10 @@ import os
 from random import choice
 import numpy as np
 from PIL import Image
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 import discord
-
+load_dotenv()
 CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
 FILE = "./data/tickets.png"
 RAID_PATH = ["./data/naboo.png"]
