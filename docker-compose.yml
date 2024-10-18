@@ -26,8 +26,40 @@ services:
     networks:
       - prison_network
 
+  metabase-postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: metabase_user
+      POSTGRES_PASSWORD: metabase_password
+      POSTGRES_DB: metabase_db
+    volumes:
+      - metabase_pg_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - prison_network
+
+  metabase:
+    image: metabase/metabase:v0.45.3
+    restart: always
+    ports:
+      - "3001:3000"
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: metabase_db
+      MB_DB_PORT: 5432
+      MB_DB_USER: ${METABASE_USER}
+      MB_DB_PASS: ${METABASE_PASSWORD}
+      MB_DB_HOST: metabase-postgres
+    depends_on:
+      - metabase-postgres
+    networks:
+      - prison_network
+
 volumes:
   pg_data:
+  postgres_data:
 
 networks:
   prison_network:
