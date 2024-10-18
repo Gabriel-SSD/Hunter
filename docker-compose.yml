@@ -27,6 +27,7 @@ services:
       - prison_network
 
   metabase-postgres:
+    container_name: metabase-postgres
     image: postgres:latest
     restart: always
     environment:
@@ -41,6 +42,7 @@ services:
       - prison_network
 
   metabase:
+    container_name: metabase
     image: metabase/metabase:v0.45.3
     restart: always
     ports:
