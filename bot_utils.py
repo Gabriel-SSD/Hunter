@@ -98,7 +98,7 @@ def get_tickets_missed(guild_id: str):
             where 1=1
                 and ft.tickets < 600
                 and dg.guild_id = '{guild_id}'
-                and dt.date >= CURRENT_DATE - interval 7 days'
+                and dt.date >= CURRENT_DATE - interval '7 days'
             group by dp.name
             order by 2 desc
             """
