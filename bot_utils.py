@@ -84,7 +84,7 @@ def plot_ticket_report(guild_id: str):
     plt.tight_layout()
     plt.savefig(FILE)
 
-def get_tickets_missed(guild_id: str):
+def get_tickets_missed(guild_id: str, days :str):
     DATABASE_URL = os.getenv('DATABASE_URL')
     engine = create_engine(DATABASE_URL)
     query = f"""
@@ -98,7 +98,7 @@ def get_tickets_missed(guild_id: str):
             where 1=1
                 and ft.tickets < 600
                 and dg.guild_id = '{guild_id}'
-                and dt.date >= CURRENT_DATE - interval '7 days'
+                and dt.date >= CURRENT_DATE - interval '{days} days'
             group by dp.name
             order by 2 desc
             """
@@ -106,11 +106,11 @@ def get_tickets_missed(guild_id: str):
         df = pd.read_sql_query(query, conn)
     return df
 
-def format_embed(df, guild_name):
+def format_embed(df, guild_name, days):
     if df.empty:
         embed = discord.Embed(
                 title=f"{guild_name} Missed Tickets Report",
-                description="Perfect week!",
+                description="Perfect!",
                 colour=discord.Color(0x7F8C8D)
             )
     else:
@@ -121,7 +121,7 @@ def format_embed(df, guild_name):
             sum_missed += row['tickets_missed']
         member_list += "```"
         body = member_list
-        header = (f"**{sum_missed}** tickets missed in the last **7** days\n"
+        header = (f"**{sum_missed}** tickets missed in the last **{days}** days\n"
                       f"Members that missed tickets:")
         embed = discord.Embed(
                 title=f"{guild_name} Missed Tickets Report",
