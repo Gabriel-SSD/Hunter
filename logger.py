@@ -53,7 +53,7 @@ def setup_logging():
     load_dotenv(dotenv_path='.env')
     db_url = os.getenv('DATABASE_URL')
     logger = logging.getLogger('hunter')
-    logger.setLevel(logging.ERROR)
+    logger.setLevel(logging.INFO)
 
     db_handler = DatabaseHandler(db_url)
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
