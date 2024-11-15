@@ -1,7 +1,7 @@
 import requests
 import pandas as pd
 import os
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from logger import setup_logging
 from dotenv import load_dotenv
 
@@ -44,8 +44,9 @@ if __name__ == "__main__":
                 logger.error(f"Failed to retrieve data from API. Status code: {response.status_code}")
                 raise Exception(f"API request failed with status code {response.status_code}")
 
-            logger.info("Uploading data to the database table 'd_unit'.")
-            df.to_sql("d_unit", con=connection, if_exists="replace", index=False)
+            logger.info("Uploading data to the database table 'stg_unit'.")
+            df.to_sql("stg_unit", con=connection, if_exists="replace", index=False)
+            connection.execute(text("CALL upsert_units()"))
             logger.info("Data uploaded successfully to 'd_unit'.")
 
     except Exception as e:
