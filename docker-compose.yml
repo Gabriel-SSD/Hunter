@@ -1,3 +1,6 @@
+x-client-url: &env_client_url
+  CLIENT_URL: http://swgoh-comlink:3000
+
 services:
   swgoh-comlink:
     container_name: swgoh-comlink
@@ -8,6 +11,21 @@ services:
       PORT: 3000
     ports:
       - "3000:3000"
+    networks:
+      - prison_network
+  swgoh-stats:
+    container_name: swgoh-stats
+    image: ghcr.io/swgoh-utils/swgoh-stats:latest
+    restart: always
+    depends_on:
+      - swgoh-comlink
+    environment:
+      <<: *env_client_url
+      PORT: 3223
+    volumes:
+      - "./statCalcData:/app/statCalcData"
+    ports:
+      - "3223:3223"
     networks:
       - prison_network
 
