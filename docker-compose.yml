@@ -13,6 +13,7 @@ services:
       - "3000:3000"
     networks:
       - prison_network
+
   swgoh-stats:
     container_name: swgoh-stats
     image: ghcr.io/swgoh-utils/swgoh-stats:latest
@@ -53,7 +54,7 @@ services:
       POSTGRES_PASSWORD: ${METABASE_PASSWORD}
       POSTGRES_DB: ${METABASE_DB}
     volumes:
-      - metabase_pg_data:/var/lib/postgresql/data
+      - mb_pg_data:/var/lib/postgresql/data
     ports:
       - "5433:5432"
     networks:
@@ -79,7 +80,7 @@ services:
 
 volumes:
   pg_data:
-  metabase_pg_data:
+  mb_pg_data:
 
 networks:
   prison_network:
