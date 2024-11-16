@@ -13,13 +13,14 @@ bot = commands.Bot(command_prefix=".", intents=intents)
 
 @bot.event
 async def on_ready():
-    logger.info("Bot is now connected and ready to go!")
+    logger.info("Starting schedules...")
     af_tickets.start(bot)
     ah_tickets.start(bot)
     af_tickets_missed.start(bot)
     ah_tickets_missed.start(bot)
 
     await bot.change_presence(activity=discord.Game(name="Star Wars: Galaxy of Heroes"))
+    logger.info("Bot is now connected and ready to go!")
 
 def run_bot():
     logger.info("Attempting to start the bot...")
