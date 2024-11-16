@@ -2,7 +2,7 @@ import discord
 import os
 from discord.ext import commands
 from dotenv import load_dotenv
-from tasks import af_tickets, ah_tickets, af_tickets_missed, ah_tickets_missed
+from bot_tasks import af_tickets, ah_tickets, af_tickets_missed, ah_tickets_missed
 from logger import setup_logging
 
 load_dotenv()
