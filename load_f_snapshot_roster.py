@@ -1,13 +1,13 @@
-import pandas as pd
 from sqlalchemy import create_engine, text
 from swgoh_comlink import SwgohComlink
 from dotenv import load_dotenv
 from logger import setup_logging
 from datetime import datetime
 import os
+import pandas as pd
 
+CSV_FILENAME = 'subs_data.csv'
 # List of ally codes representing specific players in the game
-ALLYCODES = ['798472764', '684751897', '755251518', '347738465', '637187182', '144447734']
 
 logger = setup_logging()
 load_dotenv()
@@ -77,7 +77,9 @@ if __name__ == "__main__":
         with engine.begin() as connection:
             logger.info("Database connection established. Processing roster data.")
             # Fetch player rosters and process them for tracking
-            df = process_units_for_tracking(get_player_roster(ALLYCODES))
+            df_r = pd.read_csv(CSV_FILENAME)
+            allycodes = df_r.iloc[:, 0].tolist()
+            df = process_units_for_tracking(get_player_roster(allycodes))
             logger.info("Uploading roster data to the database.")
             # Upload the processed DataFrame to the database table `stg_snapshot_roster`
             df.to_sql("stg_snapshot_roster", con=connection, if_exists="replace", index=False)
