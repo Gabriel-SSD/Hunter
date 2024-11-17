@@ -52,13 +52,17 @@ class DatabaseHandler(logging.Handler):
 def setup_logging():
     load_dotenv(dotenv_path='.env')
     db_url = os.getenv('DATABASE_URL')
+
     logger = logging.getLogger('hunter')
-    logger.setLevel(logging.INFO)
 
-    db_handler = DatabaseHandler(db_url)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    db_handler.setFormatter(formatter)
+    # Verifique se já existe um *handler* para evitar duplicação
+    if not any(isinstance(handler, DatabaseHandler) for handler in logger.handlers):
+        logger.setLevel(logging.INFO)
 
-    logger.addHandler(db_handler)
+        db_handler = DatabaseHandler(db_url)
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        db_handler.setFormatter(formatter)
+
+        logger.addHandler(db_handler)
 
     return logger
