@@ -2,7 +2,7 @@ import discord
 import os
 from discord.ext import commands
 from dotenv import load_dotenv
-from bot_tasks import af_tickets, ah_tickets, af_tickets_missed, ah_tickets_missed
+from bot_tasks import af_tickets, ah_tickets, af_tickets_missed, ah_tickets_missed, load_messages
 from logger import setup_logging
 
 load_dotenv()
@@ -18,6 +18,7 @@ async def on_ready():
     ah_tickets.start(bot)
     af_tickets_missed.start(bot)
     ah_tickets_missed.start(bot)
+    load_messages.start(bot)
 
     await bot.change_presence(activity=discord.Game(name="Star Wars: Galaxy of Heroes"))
     logger.info("Bot is now connected and ready to go!")
