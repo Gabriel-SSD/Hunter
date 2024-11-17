@@ -7,7 +7,7 @@ from datetime import datetime
 import os
 
 # List of ally codes representing specific players in the game
-ALLYCODES = ['637187182', '994672379', '144447734', '653624496', '448398595']
+ALLYCODES = ['798472764', '684751897', '755251518', '347738465', '637187182', '144447734']
 
 logger = setup_logging()
 load_dotenv()
