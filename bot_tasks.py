@@ -81,13 +81,10 @@ async def ah_tickets_missed(bot):
             logger.error(f"Error sending missed tickets report for 'Awakening Hope' at {now}: {e}")
 
 
-DATABASE_URL = os.getenv('DATABASE_URL')  # Obtenha a URL do banco de dados do .env
+DATABASE_URL = os.getenv('DATABASE_URL')
 engine = create_engine(DATABASE_URL)
-
-# Definir a base para o modelo ORM
 Base = declarative_base()
 
-# Definindo o modelo de dados para mensagens
 class Message(Base):
     __tablename__ = 'discord_messages'
 
@@ -101,11 +98,9 @@ class Message(Base):
 
 Base.metadata.create_all(engine)
 
-# Criar uma sessão para interagir com o banco de dados
 Session = sessionmaker(bind=engine)
 session = Session()
 
-# Função para adicionar uma mensagem ao banco de dados
 def add_message_to_db(channel, user_id, user_name, nickname, message, timestamp):
     new_message = Message(
         channel=channel,
@@ -122,7 +117,7 @@ def add_message_to_db(channel, user_id, user_name, nickname, message, timestamp)
 async def load_messages(bot):
     """Task that collects and logs messages from the past day across all text channels."""
     now = datetime.now()
-    if now.hour == 21 and now.minute == 10:
+    if now.hour == 20 and now.minute == 17:
         logger.info("Starting message collection task.")
         d_minus_1 = datetime.now() - timedelta(days=1)
         start_time2 = datetime(d_minus_1.year, d_minus_1.month, d_minus_1.day, 0, 0, 0)
@@ -131,8 +126,12 @@ async def load_messages(bot):
         start_time = time.time()
         total_messages_collected = 0
 
-        for guild in bot.guilds:
-            logger.info(f"Collecting messages for guild: {guild.name} ({guild.id})")
+        guild = bot.get_guild(1193323906015187044)
+
+        if guild is None:
+            logger.error("Guild not found!")
+        else:
+            logger.info(f"Collecting messages for server: {guild.name} ({guild.id})")
             for channel in guild.text_channels:
                 try:
                     async for msg in channel.history(after=start_time2, before=end_time, limit=None):
