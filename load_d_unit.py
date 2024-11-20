@@ -45,9 +45,9 @@ if __name__ == "__main__":
                 raise Exception(f"API request failed with status code {response.status_code}")
 
             logger.info("Uploading data to the database table 'stg_unit'.")
-            df.to_sql("stg_unit", con=connection, if_exists="replace", index=False)
-            connection.execute(text("CALL upsert_units()"))
-            logger.info("Data uploaded successfully to 'd_unit'.")
+            df.to_sql("stg_swgoh_unit", con=connection, if_exists="replace", index=False)
+            connection.execute(text("CALL insert_swgoh_units()"))
+            logger.info("Data uploaded successfully to 'd_swgoh_unit'.")
 
     except Exception as e:
         logger.error(f"An error occurred during script execution: {e}")

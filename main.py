@@ -114,15 +114,15 @@ def main(guild_id: str):
 
         with engine.begin() as connection:
             logger.info("Inserting data into the database.")
-            df_guild.to_sql("stg_guild", con=connection, if_exists="replace", index=False)
-            df_player.to_sql("stg_player", con=connection, if_exists="replace", index=False)
-            df_tickets.to_sql("stg_tickets", con=connection, if_exists="replace", index=False)
-            df_raid_result.to_sql("stg_raid_result", con=connection, if_exists='replace', index=False)
+            df_guild.to_sql("stg_swgoh_guild", con=connection, if_exists="replace", index=False)
+            df_player.to_sql("stg_swgoh_player", con=connection, if_exists="replace", index=False)
+            df_tickets.to_sql("stg_swgoh_tickets", con=connection, if_exists="replace", index=False)
+            df_raid_result.to_sql("stg_swgoh_raids", con=connection, if_exists='replace', index=False)
 
-            connection.execute(text("CALL insert_guilds()"))
-            connection.execute(text("CALL upsert_players()"))
-            connection.execute(text("CALL insert_tickets()"))
-            connection.execute(text("CALL insert_raid_result()"))
+            connection.execute(text("CALL insert_swgoh_guilds()"))
+            connection.execute(text("CALL insert_swgoh_players()"))
+            connection.execute(text("CALL insert_swgoh_tickets()"))
+            connection.execute(text("CALL insert_swgoh_raids()"))
 
         logger.info("Data successfully inserted into the database.")
     except Exception as e:

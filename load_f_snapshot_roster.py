@@ -82,9 +82,9 @@ if __name__ == "__main__":
             df = process_units_for_tracking(get_player_roster(allycodes))
             logger.info("Uploading roster data to the database.")
             # Upload the processed DataFrame to the database table `stg_snapshot_roster`
-            df.to_sql("stg_snapshot_roster", con=connection, if_exists="replace", index=False)
+            df.to_sql("stg_swgoh_ss_player", con=connection, if_exists="replace", index=False)
             # Execute a stored procedure to insert data into the snapshot table
-            connection.execute(text("CALL insert_snapshot_roster()"))
+            connection.execute(text("CALL insert_swgoh_ss_player()"))
             logger.info("Data successfully inserted into the database.")
     except Exception as e:
         logger.error(f"An error occurred during script execution: {e}")
