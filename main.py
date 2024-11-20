@@ -17,12 +17,13 @@ def get_player_meta(players: list):
         logger.info("Starting player data collection.")
         player_data = []
         for player_id in players:
-            player = comlink.get_player_arena_profile(player_id=player_id)
+            player = comlink.get_player(player_id=player_id)
             player_data.append(
                 {
                     "player_id": player["playerId"],
                     "name": player["name"],
-                    "allycode": player["allyCode"]
+                    "allycode": player["allyCode"],
+                    "guild_id": player["guildId"],
                 }
             )
         logger.info(f"Successfully collected data for {len(player_data)} players.")
@@ -120,7 +121,7 @@ def main(guild_id: str):
             df_raid_result.to_sql("stg_swgoh_raids", con=connection, if_exists='replace', index=False)
 
             connection.execute(text("CALL insert_swgoh_guilds()"))
-            connection.execute(text("CALL insert_swgoh_players()"))
+            connection.execute(text(f"CALL insert_swgoh_players('{guild_id}')"))
             connection.execute(text("CALL insert_swgoh_tickets()"))
             connection.execute(text("CALL insert_swgoh_raids()"))
 
