@@ -87,7 +87,7 @@ async def load_messages(bot):
     now = datetime.now()
 
 
-    if now.hour == 23 and now.minute == 56:
+    if now.hour == 22 and now.minute == 10:
         logger.info(f"Starting the message collection task. Current time: {now.strftime('%Y-%m-%d %H:%M:%S')}")
         engine = create_engine(os.getenv('DATABASE_URL'))
 
