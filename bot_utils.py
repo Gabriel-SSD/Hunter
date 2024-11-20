@@ -32,9 +32,9 @@ def plot_ticket_report(guild_id: str):
             cast(dt."date" as date) as date,
             sum(tickets) as tickets,
             dg."name" 
-        from f_tickets ft
+        from f_swgoh_tickets ft
         join d_time dt on ft.sk_time = dt.id
-        join d_guild dg on ft.sk_guild = dg.id
+        join d_swgoh_guild dg on ft.sk_guild = dg.id
         where 1=1
             and dt."date" > current_date - 7
             and dg.guild_id = '{guild_id}' 
@@ -120,10 +120,10 @@ def get_tickets_missed(guild_id: str, days: str):
             select
                 dp.name as player,
                 sum(600 - tickets) as tickets_missed
-            from f_tickets ft
+            from f_swgoh_tickets ft
             join d_time dt on dt.id = ft.sk_time
-            join d_player dp on dp.id = ft.sk_player
-            join d_guild dg on dg.id = ft.sk_guild
+            join d_swgoh_player dp on dp.id = ft.sk_player
+            join d_swgoh_guild dg on dg.id = ft.sk_guild
             where 1=1
                 and ft.tickets < 600
                 and dg.guild_id = '{guild_id}'
