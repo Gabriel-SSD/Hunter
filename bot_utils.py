@@ -117,20 +117,27 @@ def get_tickets_missed(guild_id: str, days: str):
 
     # SQL query to fetch missed tickets for players in the guild over the specified number of days
     query = f"""
-            select
-                dp.name as player,
-                sum(600 - tickets) as tickets_missed
-            from f_swgoh_tickets ft
-            join d_time dt on dt.id = ft.sk_time
-            join d_swgoh_player dp on dp.id = ft.sk_player
-            join d_swgoh_guild dg on dg.id = ft.sk_guild
-            where 1=1
-                and ft.tickets < 600
-                and dg.guild_id = '{guild_id}'
-                and dt.date >= CURRENT_DATE - interval '{days} days'
-            group by dp.name
-            order by 2 desc
-            """
+        select
+            case 
+                when dp.current_flag = false then 'Member who left the guild'
+                else dp.name
+            end as player,
+            sum(600 - tickets) as tickets_missed
+        from f_swgoh_tickets ft
+        join d_time dt on dt.id = ft.sk_time
+        join d_swgoh_player dp on dp.id = ft.sk_player
+        join d_swgoh_guild dg on dg.id = ft.sk_guild
+        where 1=1
+            and ft.tickets < 600
+            and dg.guild_id = '{guild_id}'
+            and dt.date >= CURRENT_DATE - interval '{days} days'
+        group by 
+            case 
+                when dp.current_flag = false then 'Member who left the guild'
+                else dp.name
+            end
+        order by 2 desc
+    """
 
     try:
         logger.info(f"Running query to fetch missed tickets data for guild {guild_id} over the last {days} days")
