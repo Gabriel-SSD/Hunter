@@ -25,7 +25,10 @@ async def af_tickets(bot):
             channel = bot.get_channel(CHANNEL_ID)
             plot_ticket_report("1HE3bh3LRcWVOto5KuGvzQ")
             await channel.send(file=discord.File(fp=FILE))
-            logger.info("Ticket report for 'Awakening Fear' sent successfully.")
+            df = get_tickets_missed("1HE3bh3LRcWVOto5KuGvzQ", '0')
+            embed = format_embed(df, "Awakening Fear", '0')
+            await channel.send(embed=embed)
+            logger.info("Ticket report and missed tickets report for 'Awakening Fear' sent successfully.")
         except Exception as e:
             logger.error(f"Error sending ticket report for 'Awakening Fear' at {now}: {e}")
 
